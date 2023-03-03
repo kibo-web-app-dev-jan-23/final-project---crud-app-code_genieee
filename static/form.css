@@ -1,0 +1,20 @@
+body{
+    background-color: white;
+}
+
+form{
+    background-color: white;
+    color: black;
+    height: 619px;
+    width: 360;
+}
+.label{
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-align: start;
+}
+.submit{
+    width: 305px;
+    height: 45px;
+    background-color: #0660B5;
+    color: white;
+}
