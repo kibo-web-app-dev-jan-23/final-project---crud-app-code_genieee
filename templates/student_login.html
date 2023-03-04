@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link rel="stylesheet" href="/static/form.css">
+    <title> Student Login Page</title>
+    <link rel="stylesheet" href="./static/form.css">
 </head>
 <body>
 
-    <form method="POST" action="/login">
+    <form method="POST" action="/student_login">
         {{ form.csrf_token }}
         {{ render_field(form.username) }}<br>
         {{ render_field(form.password) }}<br>

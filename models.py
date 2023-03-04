@@ -1,19 +1,49 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Integer, Column, ForeignKey
+from sqlalchemy import String, Integer, Column, ForeignKey, Date, create_engine
 from sqlalchemy_utils import EmailType
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, declarative_base
 
-db = SQLAlchemy()
+Base = declarative_base()
 
-class Student(db.Model):
-    __tablename__ = "student"
+
+class Student(Base):
+    __tablename__ = "students"
     id = Column(Integer, primary_key=True)
     first_name = Column(String(50))
     last_name= Column(String(50))
-    email_id= Column(EmailType())
-    password = Column(String(length=60))
-    dateOfBirth = Column()
-    courses = relationship("Enrollment", back_populates="student")
+    username = Column(String(length=60), unique=True, nullable=False)
+    email_id= Column(EmailType(), unique= True, nullable=False)
+    password = Column(String(length=60), unique=True, nullable=False)
+    dateOfBirth = Column(Date())
+    address = Column(String())
+    # year = Column(Integer)
 
-    def __repr__(self):
-        return f"enrolled in {self.course.name}"
+class Course(Base):
+    __tablename__ = "courses"
+    id = Column(Integer, primary_key= True)
+    name = Column(String(50))
+    year_taken = Column(Integer)
+    
+class Instructors(Base):
+    __tablename__ ="instructors"
+    id = Column(Integer, primary_key= True)
+    first_name = Column(String(50))
+    last_name= Column(String(50))
+    email_id= Column(EmailType(), unique= True)
+    password = Column(String(length=60), unique=True)
+    address = Column(String())
+
+# class Year1(Base):
+#     __tablename__ = "year1"
+#     student_id = Column(Integer, ForeignKey("students.id"), primary_key=True) 
+#     student_year = relationship("Student", back_populates="year")
+    
+# class Year2(Base):
+#     __tablename__ = "year1"
+#     Student_id = Column(Integer, ForeignKey("students.id"), primary_key=True)
+#     student_year = relationship("Student", back_populates="year")
+    
+# class Year3(Base):
+#     __tablename__ = "year1"
+#     Student_id = Column(Integer, ForeignKey("students.id"), primary_key=True)
+#     student_year = relationship("Student", back_populates="year")
+
