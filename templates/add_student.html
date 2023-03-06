@@ -9,16 +9,14 @@
     <link rel="stylesheet" href="./static/form.css">
 </head>
 <body>
-    <form method="POST", action="/">
+    <form method="POST", action="/add_student">
         {{ form.csrf_token }}
         {{ render_field(form.firstName) }}<br>
         {{ render_field(form.lastName) }}<br>
-        {{ render_field(form.username) }}<br>
         {{ render_field(form.email) }}<br>
-        {{ render_field(form.password) }}<br>
         {{ render_field(form.dateOfBirth) }}<br>
         {{ render_field(form.address) }}<br>
-        <input type="submit" value="Sign-up" class="submit">
+        <input type="submit" value="Submit" class="submit">
     </form>
 
 </body>

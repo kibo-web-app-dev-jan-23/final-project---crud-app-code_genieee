@@ -1,6 +1,14 @@
 from sqlalchemy import select, delete, create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Student, Admin, Base
+from models import Student, Admin, Instructors ,Base
+import random
+import string
+
+def generate_random_password():
+    # get random password of length 8 with letters, digits, and symbols
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(random.choice(characters) for i in range(12))
+    return password
 
 
 
@@ -19,18 +27,19 @@ class SchoolManagementDB():
         Base.metadata.create_all(self.engine)
     
         
-    def add_student(self, firstname, lastname, username, email, password, birthdate, address):
+    def add_student(self, firstname, lastname, email,password, birthdate, address):
         self.session.add(Student(first_name = firstname,
                                  last_name = lastname,
-                                 username = username,
                                  email_id = email,
                                  password = password,
                                  dateOfBirth = birthdate,
                                  address = address,))
         self.session.commit()
         
-    def get_student_info_on_login(self, username):
-        return self.session.query(Student).filter_by(username=username).first() or self.session.query(Student).filter_by(email_id=username).first()
+    
+        
+    def get_student_info(self, email):
+        return self.session.query(Student).filter_by(email_id=email).first()
     
     def lookup_student(self, student_id_to_lookup):
         result = self.session.get(Student, student_id_to_lookup)
@@ -55,3 +64,15 @@ class SchoolManagementDB():
     
     def query_db(self, id):
         return self.session.query(Student).get(id) or self.session.query(Admin).get(id)
+    
+    def add_instructor(self, firstname, lastname, email, password):
+        self.session.add(Instructors(
+            first_name = firstname,
+            last_name = lastname,
+            email_id = email,
+            password = password
+        ))
+        self.session.commit()
+        
+    def get_instructor_info(self, email):
+        return self.session.query(Instructors).filter_by(email_id = email).first()
