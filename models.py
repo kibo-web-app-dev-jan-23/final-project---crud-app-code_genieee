@@ -1,18 +1,18 @@
 from sqlalchemy import String, Integer, Column, ForeignKey, Date, create_engine
 from sqlalchemy_utils import EmailType
 from sqlalchemy.orm import relationship, declarative_base
+from flask_login import UserMixin
 
 Base = declarative_base()
 
-
-class Student(Base):
+class Student(UserMixin, Base):
     __tablename__ = "students"
     id = Column(Integer, primary_key=True)
     first_name = Column(String(50))
     last_name= Column(String(50))
     username = Column(String(length=60), unique=True, nullable=False)
     email_id= Column(EmailType(), unique= True, nullable=False)
-    password = Column(String(length=60), unique=True, nullable=False)
+    password = Column(String(length=60), nullable=False)
     dateOfBirth = Column(Date())
     address = Column(String())
     # year = Column(Integer)
@@ -29,9 +29,14 @@ class Instructors(Base):
     first_name = Column(String(50))
     last_name= Column(String(50))
     email_id= Column(EmailType(), unique= True)
-    password = Column(String(length=60), unique=True)
-    address = Column(String())
+    password = Column(String(length=60))
 
+class Admin(UserMixin, Base):
+    __tablename__ ="admin"
+    id = Column(Integer, primary_key= True)
+    username = Column(String(50), unique=True)
+    password = Column(String(length=60), unique=True)
+    
 # class Year1(Base):
 #     __tablename__ = "year1"
 #     student_id = Column(Integer, ForeignKey("students.id"), primary_key=True) 

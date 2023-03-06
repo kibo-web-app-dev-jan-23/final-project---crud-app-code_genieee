@@ -1,15 +1,15 @@
-body{
-    background-color: white;
-}
-
+body {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #eee;
+  }
+  
 form{
-    background-color: white;
-    color: black;
-    height: 619px;
-    width: 360;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
 }
 .label{
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     text-align: start;
 }
 .submit{
