@@ -14,7 +14,7 @@ def generate_random_password():
 
 class SchoolManagementDB():
     # set logging=True to log all SQL queries
-    def __init__(self, path="sqlite:///courses.db", logging=False):
+    def __init__(self, path="sqlite:///database.db", logging=False):
         self.engine = create_engine(path, echo=logging)
         Session = sessionmaker(self.engine)
         self.session = Session()
