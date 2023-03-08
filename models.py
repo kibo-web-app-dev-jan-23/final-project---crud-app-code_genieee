@@ -14,13 +14,14 @@ class Student(UserMixin, Base):
     password = Column(String(length=60), nullable=False)
     dateOfBirth = Column(Date())
     address = Column(String())
-    # year = Column(Integer)
+    current_year = Column(Integer)
 
+   
 class Course(Base):
     __tablename__ = "courses"
     id = Column(Integer, primary_key= True)
     name = Column(String(50))
-    year_taken = Column(Integer)
+    # year_taken = Column(Integer)
     
 class Instructors(UserMixin, Base):
     __tablename__ ="instructors"
@@ -36,18 +37,3 @@ class Admin(UserMixin, Base):
     username = Column(String(50), unique=True)
     password = Column(String(length=60), unique=True)
     
-# class Year1(Base):
-#     __tablename__ = "year1"
-#     student_id = Column(Integer, ForeignKey("students.id"), primary_key=True) 
-# #     student_year = relationship("Student", back_populates="year")
-    
-# class Year2(Base):
-#     __tablename__ = "year1"
-#     Student_id = Column(Integer, ForeignKey("students.id"), primary_key=True)
-# #     student_year = relationship("Student", back_populates="year")
-    
-# class Year3(Base):
-#     __tablename__ = "year1"
-#     Student_id = Column(Integer, ForeignKey("students.id"), primary_key=True)
-# #     student_year = relationship("Student", back_populates="year")
-

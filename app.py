@@ -1,8 +1,10 @@
 from flask import Flask, render_template, redirect, url_for, flash
 from db_manager import SchoolManagementDB, generate_random_password
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, login_required, current_user, login_user
-from forms import Add_student, AddInstructor, Login, AdminLogin, get_data_from_form, get_data_from_login_form
+from flask_login import LoginManager, login_required, current_user, login_user, logout_user
+from forms import Add_student, AddInstructor, Login, AdminLogin, ChangePasswordForm, ViewClass, get_data_from_form, get_data_from_login_form
+from wtforms.validators import ValidationError
+from pyisemail import is_email
 from models import Admin
 
 
@@ -102,21 +104,59 @@ def add_instructors():
             return "This instructor has been registered"
     return render_template("instructor.html", form=form)
 
+@app.route("/view_class", methods=["GET", "POST"])
+@login_required
+def view_class():
+    form = ViewClass()
+    if form.validate_on_submit():
+        if form.select_year.data == "Year 1":
+            result = manager.view_student_in_a_class(1)
+        elif form.select_year.data == "Year 2":
+            result = manager.view_student_in_a_class(2)
+        elif form.select_year.data == "Year 3":
+            result = manager.view_student_in_a_class(3)
+        return render_template("student.html", result=result)    
+    return render_template("view_class.html", form = form)
+
 @app.route('/add_student', methods=["GET", "POST"])
 @login_required
 def add_student():
     form = Add_student()
     password = generate_random_password()
     secure_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    firstname,lastname,email,dob,address = get_data_from_form(form)
+    firstname,lastname,email,dob,address,year = get_data_from_form(form)
     if form.validate_on_submit():
-        check_student = manager.get_student_info(email)
-        if check_student == None:
-            manager.add_student(firstname,lastname,email,secure_password,dob,address)
-            return (f"Student added successfully. Student password is {password}")
+        if is_email(email, check_dns=True) == False:
+            flash("Email does not exist", "error")
+            redirect("/add_student")
         else:
-            return "The email you entered has been used by a student"
+            check_student = manager.get_student_info(email)
+            if check_student == None:
+                manager.add_student(firstname,lastname,email,secure_password,dob,address, year)
+                flash (f"Student added successfully. Student password is {password}", "success")
+                redirect("/add_student")
+            else:
+                flash ("The email you entered has been used by a student", "error")
+                return redirect("/add_student")
     return render_template("add_student.html", form= form)
+
+@app.route('/change_password', methods=['POST', 'GET'])
+@login_required
+def change_student_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        manager.update_student_password(form.new_password)
+        flash('Your password has been changed.', 'success')
+        return redirect(url_for('student_login'))
+    else:
+        flash('Invalid password.', 'error')
+    return render_template('change_password.html', form=form)
+
+@app.route('/logout', methods=['POST', 'GET'])
+@login_required
+def log_out():
+    logout_user()
+    return redirect("/admin")
 
 
         

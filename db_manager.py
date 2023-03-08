@@ -27,19 +27,23 @@ class SchoolManagementDB():
         Base.metadata.create_all(self.engine)
     
         
-    def add_student(self, firstname, lastname, email,password, birthdate, address):
+    def add_student(self, firstname, lastname, email,password, birthdate, address, year):
         self.session.add(Student(first_name = firstname,
                                  last_name = lastname,
                                  email_id = email,
                                  password = password,
                                  dateOfBirth = birthdate,
-                                 address = address,))
+                                 address = address,
+                                 current_year = year))
         self.session.commit()
         
     
         
     def get_student_info(self, email):
         return self.session.query(Student).filter_by(email_id=email).first()
+    
+    def view_student_in_a_class(self, student_year):
+        return self.session.query(Student).filter_by(current_year=student_year).all()
     
     def lookup_student(self, student_id_to_lookup):
         result = self.session.get(Student, student_id_to_lookup)
