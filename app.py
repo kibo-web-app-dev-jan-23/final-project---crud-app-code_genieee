@@ -6,8 +6,6 @@ from flask_login import LoginManager, login_required, current_user, login_user, 
 from forms import Add_student, AddInstructor, Login, AdminLogin, ChangePasswordForm, ViewClass, get_data_from_form, get_data_from_login_form
 from wtforms.validators import ValidationError
 from pyisemail import is_email
-from models import Admin
-
 
 
 
@@ -16,7 +14,7 @@ app.config['SECRET_KEY'] = "Don'tTellAnyone"
 bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
-db = SQLAlchemy(app)
+
 
 manager = SchoolManagementDB()
 manager.initialize_db_schema()
@@ -160,20 +158,6 @@ def log_out():
     return redirect("/admin")
 
 
-
-@app.route('/change_password', methods=['POST'])
-@login_required
-def change_password():
-    form = ChangePasswordForm()
-    if form.validate_on_submit():
-        if current_user.check_password(form.old_password.data):
-            current_user.set_password(form.new_password.data)
-            db.session.commit()
-            flash('Your password has been changed.', 'success')
-            return redirect(url_for('student_login'))
-        else:
-            flash('Invalid password.', 'error')
-    return render_template('student_login.html', form=form)
 
 
         

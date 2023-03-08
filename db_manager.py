@@ -80,3 +80,6 @@ class SchoolManagementDB():
         
     def get_instructor_info(self, email):
         return self.session.query(Instructors).filter_by(email_id = email).first()
+    
+    def update_student_password(self, student_new_password):
+        return self.session.query(Student).update(password = student_new_password)
