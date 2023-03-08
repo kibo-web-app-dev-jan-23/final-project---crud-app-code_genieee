@@ -7,12 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Student</title>
     <link rel="stylesheet" href="./static/form.css">
+    <style>
+        label{
+            display: inline;
+        }
+    </style>
 </head>
 <body>
-    <p>Select student year to view</p>
+    <h1>Select student year to view</h1>
     <form action="/view_class" method="POST">
         {{ form.csrf_token }}
-        {{ render_field(form.select_year) }}<br> 
+        {{ render_field(form.select_year)}}<br> 
         <input type="submit" value="login" class=submit>
     </form>
 </body>

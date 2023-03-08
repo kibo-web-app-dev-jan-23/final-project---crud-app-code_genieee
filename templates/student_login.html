@@ -7,35 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Student Login Page</title>
     <link rel="stylesheet" href="./static/form.css">
+    st
 </head>
 <body>
-
-    {% if error %}
-        <div class="error">{{ error }}</div>
-    {% endif %}
-
-    {% if success %}
-        <div class="success">{{ success }}</div>
-    {% endif %}
-
-    {% if not current_user.is_authenticated %}
-        <form method="POST" action="{{ url_for('student_login') }}">
+        <form method="POST" action="/student_login">
             {{ form.csrf_token }}
             {{ render_field(form.username) }}<br>
             {{ render_field(form.password) }}<br>
             <input type="submit" value="Login" class="submit">
         </form>
-    {% else %}
-        <p>You are logged in as {{ current_user.username }}.</p>
-        <form method="POST" action="{{ url_for('change_password') }}">
-            {{ form.csrf_token }}
-            {{ render_field(form.old_password) }}<br>
-            {{ render_field(form.new_password) }}<br>
-            {{ render_field(form.confirm_password) }}<br>
-            <input type="submit" value="Change Password" class="submit">
-        </form>
-    {% endif %}
-
 </body>
 </html>
 

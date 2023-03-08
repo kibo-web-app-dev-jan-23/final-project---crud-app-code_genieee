@@ -12,7 +12,13 @@ form {
   max-width: 400px;
   padding: 30px;
 }
-
+h1{
+  text-align: center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  font-size: 36px;
+  color: #4CAF50;
+}
 label {
   color: #666;
   display: block;
