@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, EmailField, DateField, SubmitField, IntegerField, RadioField
-from wtforms.validators import InputRequired, Length, Email, EqualTo, NumberRange
+from wtforms import StringField, PasswordField, EmailField, DateField
+from wtforms.validators import InputRequired, Length, Email
 # Student signup form 
 class Add_student(FlaskForm):
     firstName = StringField("Firstname", validators=[InputRequired()])
@@ -27,17 +27,7 @@ class AddInstructor(FlaskForm):
     firstName = StringField("Firstname", validators=[InputRequired()])
     lastName = StringField("Lastname", validators= [InputRequired()])
     email = EmailField("Email-Id", validators=[InputRequired(), Email(message="Input a valid email address")])
-    
-class ChangePasswordForm(FlaskForm):
-    current_password = PasswordField('Current Password', validators=[InputRequired()])
-    new_password = PasswordField('New Password', validators=[InputRequired(), EqualTo('confirm_password', message='Passwords must match')])
-    confirm_password = PasswordField('Confirm New Password', validators=[InputRequired()])
-    submit = SubmitField('Change Password')  
-    
-class ViewClass(FlaskForm):
-      select_year = RadioField('Select Year', choices=['Year 1', 'Year 2', 'Year 3'], validators=[InputRequired()])
-      
-      
+
 #Get data from signup page    
 def get_data_from_form(form):
     firstname = form.firstName.data
