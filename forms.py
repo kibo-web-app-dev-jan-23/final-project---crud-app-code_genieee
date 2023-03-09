@@ -14,7 +14,6 @@ class Add_student(FlaskForm):
     year = IntegerField("Year", validators=[InputRequired(), NumberRange(min=1, max=3)])
     
 
-
 #Login form    
 class Login(FlaskForm):
     username = StringField("Username/email", validators=[InputRequired(), Email(message="Input a valid form")])
@@ -40,12 +39,11 @@ class ChangePasswordForm(FlaskForm):
 class ViewClass(FlaskForm):
       select_year = RadioField('Select Year', choices=['Year 1', 'Year 2', 'Year 3'], validators=[InputRequired()])
       
-#student to change password
-class ChangePasswordForm(FlaskForm):
-    current_password = PasswordField('Current Password', validators=[DataRequired()])
-    new_password = PasswordField('New Password', validators=[DataRequired(), EqualTo('confirm_password', message='Passwords must match')])
-    confirm_password = PasswordField('Confirm New Password', validators=[DataRequired()])
-    submit = SubmitField('Change Password')    
+class GetStudent(FlaskForm):
+      student_name = StringField('Student Name', validators=[InputRequired()])
+      student_year = IntegerField("Year", validators=[InputRequired(), NumberRange(min=1, max=3)])
+      
+    
 
 #Get data from signup page    
 def get_data_from_form(form):

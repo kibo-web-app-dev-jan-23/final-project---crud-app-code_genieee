@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./static/table.css">
+</head>
+<body>
+    <h1>Available Instructors</h1>
+<table>
+    <tr>
+        <th>first_name</th>
+        <th>last_name</th>
+        <th>email_id</th>
+        
+    </tr>
+    {% for instructor in result %}
+        <tr>
+            <td>{{instructor.first_name}}</td>
+            <td>{{instructor.last_name}}</td>
+            <td>{{instructor.email_id}}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

@@ -45,22 +45,13 @@ class SchoolManagementDB():
     def view_student_in_a_class(self, student_year):
         return self.session.query(Student).filter_by(current_year=student_year).all()
     
-    def lookup_student(self, student_id_to_lookup):
-        result = self.session.get(Student, student_id_to_lookup)
-        if result == None:
-            return f"No student with ID {student_id_to_lookup}."
-        return result
     
-    def search_students_by_name(self, name_to_lookup):
-        return (
-            self.session.query(Student)
-            .filter(Student.first_name.ilike("%" + name_to_lookup + "%"))
-            .all() 
-            or 
-            self.session.query(Student)
-            .filter(Student.last_name.ilike("%" + name_to_lookup + "%"))
-            .all()
-        )
+    def lookup_student(self, name_to_lookup, student_year):
+        result =  self.session.query(Student).filter((Student.first_name.ilike("%" + name_to_lookup + "%")
+                                                                  or Student.last_name.ilike("%" + name_to_lookup + "%")),
+                                                                  Student.current_year == student_year).all()
+        return result
+           
     
         
     def get_admin_info(self, username):
@@ -83,3 +74,6 @@ class SchoolManagementDB():
     
     def update_student_password(self, student_new_password):
         return self.session.query(Student).update(password = student_new_password)
+    
+    def get_all_instructors(self):
+        return self.session.query(Instructors).all()
