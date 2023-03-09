@@ -16,6 +16,7 @@
         <th>email_id</th>
         <th>dateOfBirth</th>
         <th>address</th>
+        <th>year</th>
     </tr>
     {% for student in result %}
         <tr>
@@ -24,6 +25,7 @@
             <td>{{student.email_id}}</td>
             <td>{{student.dateOfBirth}}</td>
             <td>{{student.address}}</td>
+            <td>{{student.current_year}}</td>
         </tr>
     {% endfor %}
 </table>

@@ -10,7 +10,7 @@
     st
 </head>
 <body>
-        <form method="POST" action="/student_login">
+        <form method="POST">
             {{ form.csrf_token }}
             {{ render_field(form.username) }}<br>
             {{ render_field(form.password) }}<br>

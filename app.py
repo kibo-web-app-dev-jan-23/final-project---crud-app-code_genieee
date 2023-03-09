@@ -1,10 +1,9 @@
 from flask import Flask, render_template, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
 from db_manager import SchoolManagementDB, generate_random_password
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_required, current_user, login_user, logout_user
-from forms import Add_student, AddInstructor, Login, AdminLogin, ChangePasswordForm, ViewClass, GetStudent,get_data_from_form, get_data_from_login_form
-from wtforms.validators import ValidationError
+from forms import Add_student, AddInstructor, Login, AdminLogin, ChangePasswordForm, ViewClass, SearchInfo, DeleteInfo, get_data_from_form, get_data_from_login_form
+from models import Student, Instructors
 from pyisemail import is_email
 
 
@@ -40,7 +39,7 @@ def student_login():
                    return f"Welcome"
         except:
             return "User does not exist"
-    return render_template("student_login.html", form= form)
+    return render_template("login.html", form= form)
 
 
 @app.route('/instructor_login', methods=["GET", "POST"])
@@ -53,7 +52,7 @@ def instructor_login():
             if bcrypt.check_password_hash(user.password, password):
                 # login_user(user)
                 return(f"Welcome {user.first_name} {user.last_name}")
-    return render_template("instructors_login.html", form= form)
+    return render_template("login.html", form= form)
 
 @app.route('/admin', methods=["GET", "POST"])
 def admin_login():
@@ -107,7 +106,7 @@ def add_instructors():
             flash("Email does not exist", "error")
             redirect("/add_student")
         else:
-            if manager.get_instructor_info(form.email.data) == None:
+            if manager.get_info(Instructors, form.email.data) == None:
                 manager.add_instructor(form.firstName.data, form.lastName.data, form.email.data, secure_password)
                 flash(f"Instructor added successfully. Instructor's password is {password}", "success")
                 return redirect("/add_instructor")
@@ -128,7 +127,7 @@ def add_student():
             flash("Email does not exist", "error")
             redirect("/add_student")
         else:
-            check_student = manager.get_student_info(email)
+            check_student = manager.get_info(Student, email)
             if check_student == None:
                 manager.add_student(firstname,lastname,email,secure_password,dob,address, year)
                 flash (f"Student added successfully. Student password is {password}", "success")
@@ -173,14 +172,58 @@ def change_student_password():
 @app.route('/search_student', methods=['POST', 'GET'])
 @login_required
 def search_for_student():
-    form = GetStudent()
+    form = SearchInfo()
     if form.validate_on_submit():
-        result = manager.lookup_student(form.student_name.data, form.student_year.data)
+        result = manager.lookup(Student, form.first_name.data, form.last_name.data)
         if result:
-            pass
+            return render_template("student.html", result=result)
         else:
             flash("Student does not exist", "error")
-            return redirect("/search_student") 
+            return redirect("/search_student")
+    return render_template("search.html", form=form) 
+
+@app.route('/search_instructor', methods=['POST', 'GET'])
+@login_required
+def search_for_instructor():
+    form = SearchInfo()
+    if form.validate_on_submit():
+        result = manager.lookup(Instructors, form.first_name.data, form.last_name.data)
+        if result:
+            return render_template("available_instructor.html", result=result)
+        else:
+            flash("Instructor does not exist", "error")
+            return redirect("/search_instructor")
+    return render_template("search.html", form=form) 
+
+@app.route('/delete_instructor', methods=['POST', 'GET'])
+@login_required
+def delete_instructor():
+    form = DeleteInfo()
+    if form.validate_on_submit():
+        user = manager.get_info(Instructors, form.email.data)
+        if user:
+            manager.delete_info(user)
+            flash("Instructor deleted successfully", "success")
+            return redirect('/delete_instructor')
+        else:
+            flash("There's no instructor with this email id", "error")
+            redirect("/delete_instructor")
+    return render_template("delete.html", form=form)
+
+@app.route('/delete_student', methods=['POST', 'GET'])
+@login_required
+def delete_student():
+    form = DeleteInfo()
+    if form.validate_on_submit():
+        user = manager.get_info(Student, form.email.data)
+        if user:
+            manager.delete_info(user)
+            flash("Student deleted successfully", "success")
+            return redirect('/delete_student')
+        else:
+            flash("There's no student with this email id", "error")
+            redirect("/delete_student")
+    return render_template("delete.html", form=form)
 
 @app.route('/logout', methods=['POST', 'GET'])
 @login_required

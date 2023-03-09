@@ -39,19 +39,18 @@ class SchoolManagementDB():
         
     
         
-    def get_student_info(self, email):
-        return self.session.query(Student).filter_by(email_id=email).first()
+    def get_info(self, table, email):
+        return self.session.query(table).filter_by(email_id=email).first()
     
     def view_student_in_a_class(self, student_year):
         return self.session.query(Student).filter_by(current_year=student_year).all()
     
     
-    def lookup_student(self, name_to_lookup, student_year):
-        result =  self.session.query(Student).filter((Student.first_name.ilike("%" + name_to_lookup + "%")
-                                                                  or Student.last_name.ilike("%" + name_to_lookup + "%")),
-                                                                  Student.current_year == student_year).all()
+    def lookup(self, table, first_name, last_name):
+        result =  self.session.query(table).filter(table.first_name.ilike("%" + first_name + "%"), table.last_name.ilike("%" + last_name + "%")).all()
         return result
-           
+    
+    
     
         
     def get_admin_info(self, username):
@@ -69,11 +68,13 @@ class SchoolManagementDB():
         ))
         self.session.commit()
         
-    def get_instructor_info(self, email):
-        return self.session.query(Instructors).filter_by(email_id = email).first()
     
     def update_student_password(self, student_new_password):
         return self.session.query(Student).update(password = student_new_password)
     
     def get_all_instructors(self):
         return self.session.query(Instructors).all()
+    
+    def delete_info(self, user):
+        self.session.delete(user)
+        self.session.commit()

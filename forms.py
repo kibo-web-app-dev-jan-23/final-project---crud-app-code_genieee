@@ -37,11 +37,15 @@ class ChangePasswordForm(FlaskForm):
     submit = SubmitField('Change Password')  
     
 class ViewClass(FlaskForm):
-      select_year = RadioField('Select Year', choices=['Year 1', 'Year 2', 'Year 3'], validators=[InputRequired()])
+    select_year = RadioField('Select Year', choices=['Year 1', 'Year 2', 'Year 3'], validators=[InputRequired()])
       
-class GetStudent(FlaskForm):
-      student_name = StringField('Student Name', validators=[InputRequired()])
-      student_year = IntegerField("Year", validators=[InputRequired(), NumberRange(min=1, max=3)])
+class SearchInfo(FlaskForm):
+    first_name = StringField('FirstName', validators=[InputRequired()])
+    last_name = StringField('LastName', validators=[InputRequired()])
+
+class DeleteInfo(FlaskForm):
+    email = StringField("Email-Id", validators=[InputRequired(), Email(message="Input a valid email address")])
+      
       
     
 
