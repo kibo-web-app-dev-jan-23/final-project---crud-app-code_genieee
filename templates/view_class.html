@@ -1,4 +1,5 @@
 {% from "_formhelpers.html" import render_field %}
+{% extends "admin_homepage.html" %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,11 +15,13 @@
     </style>
 </head>
 <body>
+    {% block content %}
     <h1>Select student year to view</h1>
     <form action="/view_class" method="POST">
         {{ form.csrf_token }}
         {{ render_field(form.select_year)}}<br> 
         <input type="submit" value="Submit" class=submit>
     </form>
+    {% endblock content %}
 </body>
 </html>

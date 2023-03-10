@@ -32,13 +32,14 @@ def student_login():
     if form.validate_on_submit():
         try:
            username, password = get_data_from_login_form(form) 
-           user = manager.get_student_info(username)
+           user = manager.get_info(Student, username)
            if user:
                if bcrypt.check_password_hash(user.password, password):
-                #    login_user(user)
-                   return f"Welcome"
+                   login_user(user)
+                   return(f"Welcome {current_user.first_name} {current_user.last_name}")
         except:
-            return "User does not exist"
+            flash("User does not exist", "error")
+            return redirect('/student_login')
     return render_template("login.html", form= form)
 
 
@@ -47,10 +48,10 @@ def instructor_login():
     form = Login()
     if form.validate_on_submit():
         username, password = get_data_from_login_form(form)
-        user = manager.get_instructor_info(username)
+        user = manager.get_info(Instructors, username)
         if user:
             if bcrypt.check_password_hash(user.password, password):
-                # login_user(user)
+                login_user(user)
                 return(f"Welcome {user.first_name} {user.last_name}")
     return render_template("login.html", form= form)
 
