@@ -25,6 +25,14 @@ def load_user(id):
     user= manager.query_db(id)
     return (user)
 
+
+# Routing
+# Homepage route
+@app.get("/")
+@app.get("/home")
+def homepage():
+    return render_template("home.html")
+
    
 @app.route('/student_login', methods=["GET", "POST"])
 def student_login():
