@@ -29,7 +29,7 @@ class Instructors(UserMixin, Base):
     last_name= Column(String(50))  # instructor's last name column
     email_id= Column(EmailType(), unique= True)  # instructor's email id column
     password = Column(String(length=60), nullable=False) # hashed password column
-    role_id = Column(Integer, ForeignKey("roles.id"), default=3) # role id column for instructor (default is 3)
+   
 
 
 # Define the Admin model for database table 'admin'
