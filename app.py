@@ -25,6 +25,7 @@ login_manager.init_app(app)
 # Initializing the SchoolManagementDB class to interact with the database
 manager = SchoolManagementDB()
 manager.initialize_db_schema()
+manager.initialize_data()
 
 
 
@@ -126,7 +127,6 @@ def admin_login():
     form = AdminLogin()
     # If admin does not exist, flash an error message
     if manager.get_admin_info(form.username.default)==None:
-        # If form is submitted and validated, check admin credentials and redirect to homepage if successfu
         flash("User does not exist", "error")
         return redirect("/admin")
     else:
