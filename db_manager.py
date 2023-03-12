@@ -1,6 +1,6 @@
 from sqlalchemy import select, delete, create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Student, Admin, Instructors ,Base
+from models import Student, Admin, Instructors, Base
 import random
 import string
 
@@ -21,7 +21,15 @@ class SchoolManagementDB():
         
     def initialize_data(self, username, paswword):
         self.session.add(Admin(username=username, password=paswword))  
-        self.session.commit() 
+        self.session.commit()
+        
+    # def insert_roles(self):
+    #     roles = ["Admin", "Student", "Instructor"]
+    #     for r in roles:
+    #         role = self.session.query(Role).filter_by(name=r).first()
+    #         if role is None:
+    #             self.session.add(Role(name = r))   
+    #     self.session.commit() 
 
     def initialize_db_schema(self):
         Base.metadata.create_all(self.engine)
@@ -36,6 +44,17 @@ class SchoolManagementDB():
                                  address = address,
                                  current_year = year))
         self.session.commit()
+        
+        
+    def add_instructor(self, firstname, lastname, email, password):
+        self.session.add(Instructors(
+            first_name = firstname,
+            last_name = lastname,
+            email_id = email,
+            password = password
+        ))
+        self.session.commit()
+        
         
     
         
@@ -57,20 +76,12 @@ class SchoolManagementDB():
         return self.session.query(Admin).filter_by(username=username).first()
     
     def query_db(self, id):
-        return self.session.query(Student).get(id) or self.session.query(Admin).get(id)
+        return self.session.query(Student).get(id) or self.session.query(Admin).get(id) or self.session.query(Instructors).get(id)
     
-    def add_instructor(self, firstname, lastname, email, password):
-        self.session.add(Instructors(
-            first_name = firstname,
-            last_name = lastname,
-            email_id = email,
-            password = password
-        ))
+    
+    def update_password(self, table, new_password):
+        self.session.query(table).update({table.password:new_password})
         self.session.commit()
-        
-    
-    def update_student_password(self, student_new_password):
-        return self.session.query(Student).update(password = student_new_password)
     
     def get_all_instructors(self):
         return self.session.query(Instructors).all()
