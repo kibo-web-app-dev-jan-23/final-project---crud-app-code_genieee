@@ -34,7 +34,6 @@ class ChangePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[InputRequired()])
     new_password = PasswordField('New Password', validators=[InputRequired(), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm New Password', validators=[InputRequired()])
-    submit = SubmitField('Change Password')  
     
 class ViewClass(FlaskForm):
     select_year = RadioField('Select Year', choices=['Year 1', 'Year 2', 'Year 3'], validators=[InputRequired()])
