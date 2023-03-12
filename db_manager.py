@@ -23,7 +23,7 @@ class SchoolManagementDB():
     def initialize_data(self):
         # Generate hashed password from user's input password
         password = generate_password_hash("Admin200").decode('utf-8')
-        self.session.add(Admin(username="Admin", password=paswword))  
+        self.session.add(Admin(username="Admin", password=password))  
         self.session.commit()
 
 
