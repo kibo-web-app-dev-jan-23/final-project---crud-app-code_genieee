@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, EmailField, DateField, SubmitField, IntegerField, RadioField
 from wtforms.validators import InputRequired, Length, Email, EqualTo, NumberRange
-from wtforms import StringField, PasswordField, EmailField, DateField, SubmitField
-from wtforms.validators import InputRequired, Length, Email, DataRequired, EqualTo
+
 
 # Student signup form 
 class Add_student(FlaskForm):
