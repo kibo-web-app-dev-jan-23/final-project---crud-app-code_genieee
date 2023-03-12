@@ -1,6 +1,6 @@
 from sqlalchemy import select, delete, create_engine
 from sqlalchemy.orm import sessionmaker
-from flask_bcrypt import Bcrypt
+from app import bcrypt
 from models import Student, Admin, Instructors, Base
 import random
 import string
