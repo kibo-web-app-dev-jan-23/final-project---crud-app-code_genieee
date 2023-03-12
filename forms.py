@@ -1,3 +1,4 @@
+# Import necessary modules for form creation and validation
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, EmailField, DateField, SubmitField, IntegerField, RadioField
 from wtforms.validators import InputRequired, Length, Email, EqualTo, NumberRange
@@ -23,24 +24,29 @@ class AdminLogin(FlaskForm):
     username = StringField("Username", validators=[InputRequired()], default="Admin")
     password = PasswordField("Password", validators=[InputRequired(), Length(min=8, max=60)], default="Admin200")
     
-    
+# Define a form for adding an instructor   
 class AddInstructor(FlaskForm):
     firstName = StringField("Firstname", validators=[InputRequired()])
     lastName = StringField("Lastname", validators= [InputRequired()])
     email = EmailField("Email-Id", validators=[InputRequired(), Email(message="Input a valid email address")])
-    
+
+# Define a form for changing user password
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[InputRequired()])
     new_password = PasswordField('New Password', validators=[InputRequired(), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm New Password', validators=[InputRequired()])
-    
+
+# Define a form for selecting a class    
 class ViewClass(FlaskForm):
     select_year = RadioField('Select Year', choices=['Year 1', 'Year 2', 'Year 3'], validators=[InputRequired()])
-      
+
+# Define a form for searching user information      
 class SearchInfo(FlaskForm):
     first_name = StringField('FirstName', validators=[InputRequired()])
     last_name = StringField('LastName', validators=[InputRequired()])
 
+
+# Define a form for deleting user information
 class DeleteInfo(FlaskForm):
     email = StringField("Email-Id", validators=[InputRequired(), Email(message="Input a valid email address")])
       
