@@ -124,32 +124,16 @@ def log_out():
 def admin_login():
     # Create instance of AdminLogin form
     form = AdminLogin()
-    # Generate hashed password from user's input password
-    password = bcrypt.generate_password_hash(form.password.default).decode('utf-8')
-
-    # If admin does not exist, initialize data
+    # If admin does not exist, flash an error message
     if manager.get_admin_info(form.username.default)==None:
-        manager.initialize_data(form.username.default, password)
-        # If form is submitted and validated, check admin credentials and redirect to homepage if successful
-        if form.validate_on_submit():
-            username, password = get_data_from_login_form(form)
-            user = manager.get_admin_info(username)
-            if user:
-                if bcrypt.check_password_hash(user.password, form.password.data):
-                    login_user(user, remember=True)
-                    return redirect(url_for("admin_homepage"))
-                else:
-                    flash("Invalid password", "error")
-                    redirect("/admin")
-            else:
-                flash("Invalid Username", "error")
-                redirect("/admin")
+        # If form is submitted and validated, check admin credentials and redirect to homepage if successfu
+        flash("User does not exist", "error")
+        return redirect("/admin")
     else:
         # If admin exists, check admin credentials and redirect to homepage if successful
         if form.validate_on_submit():
             username, password = get_data_from_login_form(form)
             user = manager.get_admin_info(username)
-            print(current_user.role_id)
             if user:
                 if bcrypt.check_password_hash(user.password, password):
                     login_user(user, remember=True)
