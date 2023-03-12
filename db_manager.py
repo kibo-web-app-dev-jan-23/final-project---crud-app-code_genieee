@@ -22,14 +22,7 @@ class SchoolManagementDB():
     def initialize_data(self, username, paswword):
         self.session.add(Admin(username=username, password=paswword))  
         self.session.commit()
-        
-    # def insert_roles(self):
-    #     roles = ["Admin", "Student", "Instructor"]
-    #     for r in roles:
-    #         role = self.session.query(Role).filter_by(name=r).first()
-    #         if role is None:
-    #             self.session.add(Role(name = r))   
-    #     self.session.commit() 
+
 
     def initialize_db_schema(self):
         Base.metadata.create_all(self.engine)

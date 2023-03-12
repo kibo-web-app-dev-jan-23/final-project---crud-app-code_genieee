@@ -1,13 +1,12 @@
 # Importing necessary modules
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, current_app
 from db_manager import SchoolManagementDB, generate_random_password
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_required, current_user, login_user, logout_user
 from forms import Add_student, AddInstructor, Login, AdminLogin, ChangePasswordForm, ViewClass, SearchInfo, DeleteInfo, get_data_from_form, get_data_from_login_form
 from models import Student, Instructors
 from pyisemail import is_email
-from flask_principal import Principal, Permission, RoleNeed, UserNeed, identity_loaded
-from rolebased import be_instructor, be_admin, be_student, admin, student, instructor, AdminAccessPermission
+
 
 
 
@@ -23,14 +22,10 @@ bcrypt = Bcrypt(app)
 # Initializing the LoginManager to handle user authentication
 login_manager = LoginManager()
 login_manager.init_app(app)
-# principal = Principal(app)
-# principal.init_app(app) 
-
-
 # Initializing the SchoolManagementDB class to interact with the database
 manager = SchoolManagementDB()
 manager.initialize_db_schema()
-# manager.insert_roles()
+
 
 
 # Defining the user loader function for the LoginManager
@@ -40,8 +35,7 @@ def load_user(id):
     user= manager.query_db(id)
     return (user)
 
-  
-# admin_permission = admin
+
 
 # Routing
 # Defining the routes for the application
@@ -104,10 +98,10 @@ def user_page():
     return render_template("homepage.html")
 
 
-
+# Route for changing a student's password
 @app.route('/change_password', methods=['POST', 'GET'])
 @login_required
-def change_student_password():
+def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
         if bcrypt.check_password_hash(current_user.password, form.current_password.data):
@@ -155,6 +149,7 @@ def admin_login():
         if form.validate_on_submit():
             username, password = get_data_from_login_form(form)
             user = manager.get_admin_info(username)
+            print(current_user.role_id)
             if user:
                 if bcrypt.check_password_hash(user.password, password):
                     login_user(user, remember=True)
@@ -170,7 +165,6 @@ def admin_login():
 
 # Set up route for admin homepage
 @app.route("/admin_homepage", methods=["GET", "POST"])
-# @admin_permission.require()
 @login_required
 def admin_homepage():
     # Render admin homepage
@@ -178,7 +172,6 @@ def admin_homepage():
 
 # Set up route for adding an instructor
 @app.route("/add_instructor", methods=["GET", "POST"])
-# @admin_permission.require()
 @login_required
 def add_instructors():
     # Create an instance of the form for adding an instructor
@@ -192,13 +185,9 @@ def add_instructors():
         if is_email(form.email.data, check_dns=True) == False:
             flash("Email does not exist", "error")
             redirect("/add_instructor")
+        
         else:
-            check_instructor = manager.get_info(Instructors, form.email.data)
-            if  check_instructor == None:
-            # Redirect to the page for adding a student
-            redirect("/add_student")
-        else:
-             # Check if the instructor has already been registered
+            # Check if the instructor has already been registered
             if manager.get_info(Instructors, form.email.data) == None:
                 # Add the instructor to the database
                 manager.add_instructor(form.firstName.data, form.lastName.data, form.email.data, secure_password)
@@ -213,7 +202,6 @@ def add_instructors():
 
 # Define a route to add a new student to the database
 @app.route('/add_student', methods=["GET", "POST"])
-# @admin_permission.require()
 @login_required
 def add_student():
     form = Add_student()
@@ -240,7 +228,6 @@ def add_student():
 
 # Define a route to view students in a class
 @app.route("/view_class", methods=["GET", "POST"])
-# @admin_permission.require()
 @login_required
 def view_class():
     form = ViewClass()
@@ -257,32 +244,15 @@ def view_class():
 
 # Route for displaying all instructors
 @app.route("/view_instructors", methods=["GET", "POST"])
-# @admin_permission.require()
 @login_required
 def view_all_instructors():
     # Get all instructors from the manager
     result = manager.get_all_instructors()
     return render_template("available_instructors.html",result=result)
 
-# Route for changing a student's password
-@app.route('/change_password', methods=['POST', 'GET'])
-@login_required
-def change_student_password():
-    # Create an instance of the ChangePasswordForm
-    form = ChangePasswordForm()
-    # If the form is submitted and valid, update the student's password and redirect to the login page
-    if form.validate_on_submit():
-        manager.update_student_password(form.new_password)
-        flash('Your password has been changed.', 'success')
-        return redirect(url_for('student_login'))
-    else:
-         # If the form is not submitted or is not valid, flash an error message
-        flash('Invalid password.', 'error')
-    return render_template('change_password.html', form=form)
 
 # Route for searching for a student
 @app.route('/search_student', methods=['POST', 'GET'])
-# @admin_permission.require()
 @login_required
 def search_for_student():
     # Create an instance of the SearchInfo form
@@ -300,7 +270,6 @@ def search_for_student():
 
 # Route for searching for an instructor
 @app.route('/search_instructor', methods=['POST', 'GET'])
-# @admin_permission.require()
 @login_required
 def search_for_instructor():
     # Create an instance of the SearchInfo form
@@ -318,7 +287,6 @@ def search_for_instructor():
 
 # Delete Instructor route
 @app.route('/delete_instructor', methods=['POST', 'GET'])
-# @admin_permission.require()
 @login_required
 def delete_instructor():
     # Create an instance of the DeleteInfo form
@@ -341,7 +309,6 @@ def delete_instructor():
 
 # Delete Student route
 @app.route('/delete_student', methods=['POST', 'GET'])
-# @admin_permission.require()
 @login_required
 def delete_student():
     # Create an instance of the DeleteInfo form
@@ -363,7 +330,6 @@ def delete_student():
 
 # Logout route
 @app.route('/logout_admin', methods=['POST', 'GET'])
-# @admin_permission.require()
 @login_required
 def logout_admin():
     # Logout the current user and redirect to the admin page
