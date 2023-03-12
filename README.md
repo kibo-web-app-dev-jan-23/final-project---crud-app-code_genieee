@@ -62,6 +62,8 @@ Create a .env file in the root directory and specify the following environment v
 SECRET_KEY: A secret key used by Flask to encrypt session cookies.
 DATABASE_URL: The URL of the database. For example: sqlite:///school.db.
 Run the app with python app.py.
+Or
+Visit https://sms-82m4.onrender.com to access the app
 
 ## Using the App
 ## Homepage
@@ -96,8 +98,9 @@ After the student or instructor has logged in, they can change their passwords t
 
 ## Not yet implemented
 For the sake of this project, we only implemented some few features so as to meetup with the deadline. Some of the other features we'd like to include in our app are
-1. Students being able to view their grades
-2. Instructors being to assign assignments
-3. Students being able to view pending assignments, mark assignment as completed and also view completed assignments
-4. Instructors being able to assign grades to students
-5. Student being able to check tuition payment status 
+1. Role based access control
+2. Students being able to view their grades
+3. Instructors being to assign assignments
+4. Students being able to view pending assignments, mark assignment as completed and also view completed assignments
+5. Instructors being able to assign grades to students
+6. Student being able to check tuition payment status 
