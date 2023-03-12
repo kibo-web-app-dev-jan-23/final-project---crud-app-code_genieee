@@ -1,6 +1,6 @@
 from sqlalchemy import select, delete, create_engine
 from sqlalchemy.orm import sessionmaker
-from app import bcrypt
+from flask_bcrypt import generate_password_hash
 from models import Student, Admin, Instructors, Base
 import random
 import string
@@ -22,7 +22,7 @@ class SchoolManagementDB():
         
     def initialize_data(self):
         # Generate hashed password from user's input password
-        password = bcrypt.generate_password_hash("Admin200").decode('utf-8')
+        password = generate_password_hash("Admin200").decode('utf-8')
         self.session.add(Admin(username="Admin", password=paswword))  
         self.session.commit()
 
