@@ -1,5 +1,6 @@
 from sqlalchemy import select, delete, create_engine
 from sqlalchemy.orm import sessionmaker
+from flask_bcrypt import Bcrypt
 from models import Student, Admin, Instructors, Base
 import random
 import string
@@ -19,8 +20,10 @@ class SchoolManagementDB():
         Session = sessionmaker(self.engine)
         self.session = Session()
         
-    def initialize_data(self, username, paswword):
-        self.session.add(Admin(username=username, password=paswword))  
+    def initialize_data(self):
+        # Generate hashed password from user's input password
+        password = bcrypt.generate_password_hash("Admin200").decode('utf-8')
+        self.session.add(Admin(username="Admin", password=paswword))  
         self.session.commit()
 
 
