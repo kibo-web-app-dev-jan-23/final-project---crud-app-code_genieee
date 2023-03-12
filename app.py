@@ -1,22 +1,29 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, session
 from db_manager import SchoolManagementDB, generate_random_password
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_required, current_user, login_user, logout_user
 from forms import Add_student, AddInstructor, Login, AdminLogin, ChangePasswordForm, ViewClass, SearchInfo, DeleteInfo, get_data_from_form, get_data_from_login_form
 from models import Student, Instructors
 from pyisemail import is_email
+from flask_principal import Principal, Permission, RoleNeed, UserNeed, identity_loaded
+from rolebased import be_instructor, be_admin, be_student, admin, student, instructor, AdminAccessPermission
+
+
 
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "Don'tTellAnyone"
+app.config['USE_SESSION_FOR_NEXT'] = True
 bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
-
+# principal = Principal(app)
+# principal.init_app(app) 
 
 manager = SchoolManagementDB()
 manager.initialize_db_schema()
+# manager.insert_roles()
 
 
 
@@ -25,6 +32,10 @@ def load_user(id):
     user= manager.query_db(id)
     return (user)
 
+
+
+  
+# admin_permission = admin
 
 # Routing
 # Homepage route
@@ -38,16 +49,20 @@ def homepage():
 def student_login():
     form = Login()
     if form.validate_on_submit():
-        try:
-           username, password = get_data_from_login_form(form) 
-           user = manager.get_student_info(username)
-           if user:
-               if bcrypt.check_password_hash(user.password, password):
-                #    login_user(user)
-                   return f"Welcome"
-        except:
-            return "User does not exist"
-    return render_template("login.html", form= form)
+        username, password = get_data_from_login_form(form) 
+        user = manager.get_info(Student, username)
+        if user:
+            if bcrypt.check_password_hash(user.password, password):
+                login_user(user)
+                return redirect("/user_page")
+                   
+            else:
+                flash("Wrong Password", "error")
+                redirect('/student_login')
+        else:
+            flash("User does not exist", 'error')
+            return redirect("/student_login")
+    return render_template("student_login.html", form= form)
 
 
 @app.route('/instructor_login', methods=["GET", "POST"])
@@ -55,12 +70,46 @@ def instructor_login():
     form = Login()
     if form.validate_on_submit():
         username, password = get_data_from_login_form(form)
-        user = manager.get_instructor_info(username)
+        user = manager.get_info(Instructors, username)
         if user:
             if bcrypt.check_password_hash(user.password, password):
-                # login_user(user)
-                return(f"Welcome {user.first_name} {user.last_name}")
-    return render_template("login.html", form= form)
+                login_user(user)
+                return redirect('/user_page')
+        
+            else:
+                flash("Wrong Password", "error")
+                redirect('/instructor_login')
+        else:
+            flash("User does not exist", 'error')
+            return redirect("/instructor_login")
+    return render_template("instructor_login.html", form= form)
+
+@app.route('/user_page', methods=["GET", "POST"])
+@login_required
+def user_page():
+    return render_template("homepage.html")
+
+
+
+@app.route('/change_password', methods=['POST', 'GET'])
+@login_required
+def change_student_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if bcrypt.check_password_hash(current_user.password, form.current_password.data):
+            new_password = bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
+            manager.update_password(Student, new_password)
+            flash('Your password has been changed.', 'success')
+            return redirect(url_for('student_login'))
+        else:
+            flash('Invalid password.', 'error')
+    return render_template('change_password.html', form=form)
+
+@app.route('/logout_user', methods=['POST', 'GET'])
+@login_required
+def log_out():
+    logout_user()
+    return redirect("/home")
 
 @app.route('/admin', methods=["GET", "POST"])
 def admin_login():
@@ -99,11 +148,13 @@ def admin_login():
 
 
 @app.route("/admin_homepage", methods=["GET", "POST"])
+# @admin_permission.require()
 @login_required
 def admin_homepage():
     return render_template("admin_homepage.html")
 
 @app.route("/add_instructor", methods=["GET", "POST"])
+# @admin_permission.require()
 @login_required
 def add_instructors():
     form = AddInstructor()
@@ -112,9 +163,10 @@ def add_instructors():
     if form.validate_on_submit():
         if is_email(form.email.data, check_dns=True) == False:
             flash("Email does not exist", "error")
-            redirect("/add_student")
+            redirect("/add_instructor")
         else:
-            if manager.get_info(Instructors, form.email.data) == None:
+            check_instructor = manager.get_info(Instructors, form.email.data)
+            if  check_instructor == None:
                 manager.add_instructor(form.firstName.data, form.lastName.data, form.email.data, secure_password)
                 flash(f"Instructor added successfully. Instructor's password is {password}", "success")
                 return redirect("/add_instructor")
@@ -124,6 +176,7 @@ def add_instructors():
 
 
 @app.route('/add_student', methods=["GET", "POST"])
+# @admin_permission.require()
 @login_required
 def add_student():
     form = Add_student()
@@ -146,6 +199,7 @@ def add_student():
     return render_template("add_student.html", form= form)
 
 @app.route("/view_class", methods=["GET", "POST"])
+# @admin_permission.require()
 @login_required
 def view_class():
     form = ViewClass()
@@ -160,24 +214,16 @@ def view_class():
     return render_template("view_class.html", form = form)
 
 @app.route("/view_instructors", methods=["GET", "POST"])
+# @admin_permission.require()
 @login_required
 def view_all_instructors():
     result = manager.get_all_instructors()
     return render_template("available_instructors.html",result=result)
 
-@app.route('/change_password', methods=['POST', 'GET'])
-@login_required
-def change_student_password():
-    form = ChangePasswordForm()
-    if form.validate_on_submit():
-        manager.update_student_password(form.new_password)
-        flash('Your password has been changed.', 'success')
-        return redirect(url_for('student_login'))
-    else:
-        flash('Invalid password.', 'error')
-    return render_template('change_password.html', form=form)
+
 
 @app.route('/search_student', methods=['POST', 'GET'])
+# @admin_permission.require()
 @login_required
 def search_for_student():
     form = SearchInfo()
@@ -191,6 +237,7 @@ def search_for_student():
     return render_template("search.html", form=form) 
 
 @app.route('/search_instructor', methods=['POST', 'GET'])
+# @admin_permission.require()
 @login_required
 def search_for_instructor():
     form = SearchInfo()
@@ -204,6 +251,7 @@ def search_for_instructor():
     return render_template("search.html", form=form) 
 
 @app.route('/delete_instructor', methods=['POST', 'GET'])
+# @admin_permission.require()
 @login_required
 def delete_instructor():
     form = DeleteInfo()
@@ -219,6 +267,7 @@ def delete_instructor():
     return render_template("delete.html", form=form)
 
 @app.route('/delete_student', methods=['POST', 'GET'])
+# @admin_permission.require()
 @login_required
 def delete_student():
     form = DeleteInfo()
@@ -233,10 +282,11 @@ def delete_student():
             redirect("/delete_student")
     return render_template("delete.html", form=form)
 
-@app.route('/logout', methods=['POST', 'GET'])
+@app.route('/logout_admin', methods=['POST', 'GET'])
+# @admin_permission.require()
 @login_required
-def log_out():
+def logout_admin():
     logout_user()
     return redirect("/admin")
 
-      
+
